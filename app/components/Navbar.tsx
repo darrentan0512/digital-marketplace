@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { NavbarLinks } from "./NavbarLinks";
 import { Button } from "@/components/ui/button";
+import { MobileMenu } from "./MobileMenu";
 
 export function Navbar() {
     return (
@@ -15,7 +16,12 @@ export function Navbar() {
             <div className="flex items-center gap-x-2 ms-auto md:col-span-3">
                 <Button>Login</Button>
                 <Button variant="secondary">Register</Button>
+
+                <div className="md:hidden">
+                    <MobileMenu />
+                </div>
             </div>
+            
         </nav>
     )
 }
