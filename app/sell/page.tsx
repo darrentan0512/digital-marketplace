@@ -16,10 +16,11 @@ import { TipTapEditor } from "../components/Editor";
 import { UploadButton } from "@uploadthing/react";
 import { UploadDropzone } from "../lib/uploadthing";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { JSONContent } from "@tiptap/react";
 import { useFormState } from "react-dom";
 import { SellProduct, State } from "../action";
+import { toast } from "sonner";
 
 export default function SellRoute() {
   const initialState: State = { message: "", status: undefined };
@@ -28,7 +29,16 @@ export default function SellRoute() {
   const [images, setImages] = useState<null | string[]>(null);
   const [productFile, setProductFile] = useState<null | string>(null);
 
-  console.log(state?.errors);
+
+  console.log(state?.errors)
+
+  useEffect(() =>{
+    if (state.status === "success") {
+      toast.success(state.message);
+    }else if (state.status === "error") {
+      toast.error(state.message);
+    }
+  },[state]);
 
   return (
     <section className="max-w-7xl mx-auto px-4 md:px-8 mb-14">
@@ -49,10 +59,16 @@ export default function SellRoute() {
                 placeholder="Name of your product"
               ></Input>
             </div>
+            { state?.errors?.["name"]?.[0] && (
+              <p className="text-destructive"> {state?.errors?.["name"]?.[0] } </p>
+            ) }
             <div className="flex flex-col gap-y-2">
               <Label>Category</Label>
               <SelectCategory />
             </div>
+            { state?.errors?.["category"]?.[0] && (
+              <p className="text-destructive"> { state?.errors?.["category"]?.[0] } </p>
+            )}
             <div className="flex flex-col gap-y-2">
               <Label>Price</Label>
               <Input
@@ -61,6 +77,9 @@ export default function SellRoute() {
                 type="number"
               />
             </div>
+            { state?.errors?.["price"]?.[0] && (
+              <p className="text-destructive"> { state?.errors?.["price"]?.[0] } </p>
+            )}
             <div className="flex flex-col gap-y-2">
               <Label>Small Summary</Label>
               <Textarea
@@ -68,6 +87,9 @@ export default function SellRoute() {
                 placeholder="Please describe your product"
               />
             </div>
+            { state?.errors?.["smallDescription"]?.[0] && (
+              <p className="text-destructive"> { state?.errors?.["smallDescription"]?.[0] } </p>
+            )}
             <div className="flex flex-col gap-y-2">
               <input
                 type="hidden"
@@ -77,6 +99,9 @@ export default function SellRoute() {
               <Label>Description</Label>
               <TipTapEditor json={json} setJson={setJson} />
             </div>
+            { state?.errors?.["description"]?.[0] && (
+              <p className="text-destructive"> { state?.errors?.["description"]?.[0] } </p>
+            )}
             <div className="flex flex-col gap-y-2">
               <input
                 type="hidden"
@@ -87,13 +112,20 @@ export default function SellRoute() {
               <UploadDropzone
                 endpoint="imageUploader"
                 onClientUploadComplete={(res) => {
+                  console.log("images resp", res);
                   setImages(res.map((item) => item.url));
+                  toast.success("Your images have been uploaded");
                 }}
                 onUploadError={(error: Error) => {
+                  console.log("product", error);
                   throw new Error(`${error}`);
+                  toast.error("Something went wrong, please try again later");
                 }}
               />
             </div>
+            { state?.errors?.["images"]?.[0] && (
+              <p className="text-destructive"> { state?.errors?.["images"]?.[0] } </p>
+            )}
             <div className="flex flex-col gap-y-2">
               <input
                 type="hidden"
@@ -104,13 +136,19 @@ export default function SellRoute() {
               <UploadDropzone
                 endpoint="productFileUpload"
                 onClientUploadComplete={(res) => {
+                  console.log("product resp", res);
                   setProductFile(res[0].url);
+                  toast.success("Your product file have been uploaded")
                 }}
                 onUploadError={(error: Error) => {
                   throw new Error(`${error}`);
+                  toast.error("Something went wrong, please try again later");
                 }}
               />
             </div>
+            { state?.errors?.["productFile"]?.[0] && (
+              <p className="text-destructive"> { state?.errors?.["productFile"]?.[0] } </p>
+            )}
           </CardContent>
           <CardFooter className="mt-5">
             <Button type="submit"> Submit form </Button>
