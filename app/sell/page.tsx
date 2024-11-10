@@ -13,7 +13,6 @@ import { Label } from "@/components/ui/label";
 import { SelectCategory } from "../components/SelectCategory";
 import { Textarea } from "@/components/ui/textarea";
 import { TipTapEditor } from "../components/Editor";
-import { UploadButton } from "@uploadthing/react";
 import { UploadDropzone } from "../lib/uploadthing";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
@@ -21,6 +20,8 @@ import { JSONContent } from "@tiptap/react";
 import { useFormState } from "react-dom";
 import { SellProduct, State } from "../action";
 import { toast } from "sonner";
+import { SubmitButton } from "../components/SubmitButton";
+import { redirect } from "next/navigation";
 
 export default function SellRoute() {
   const initialState: State = { message: "", status: undefined };
@@ -35,6 +36,7 @@ export default function SellRoute() {
   useEffect(() =>{
     if (state.status === "success") {
       toast.success(state.message);
+      redirect("/");
     }else if (state.status === "error") {
       toast.error(state.message);
     }
@@ -57,6 +59,8 @@ export default function SellRoute() {
                 name="name"
                 type="text"
                 placeholder="Name of your product"
+                required
+                min={5}
               ></Input>
             </div>
             { state?.errors?.["name"]?.[0] && (
@@ -75,6 +79,8 @@ export default function SellRoute() {
                 name="price"
                 placeholder="Enter your price"
                 type="number"
+                required
+                min={1}
               />
             </div>
             { state?.errors?.["price"]?.[0] && (
@@ -85,6 +91,8 @@ export default function SellRoute() {
               <Textarea
                 name="smallDescription"
                 placeholder="Please describe your product"
+                required
+                minLength={10}
               />
             </div>
             { state?.errors?.["smallDescription"]?.[0] && (
@@ -151,7 +159,7 @@ export default function SellRoute() {
             )}
           </CardContent>
           <CardFooter className="mt-5">
-            <Button type="submit"> Submit form </Button>
+            <SubmitButton />
           </CardFooter>
         </form>
       </Card>
